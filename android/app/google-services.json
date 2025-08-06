@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "853982492744",
+    "project_id": "e-sports-b675b",
+    "storage_bucket": "e-sports-b675b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:853982492744:android:571c7f27f898f2b073c07d",
+        "android_client_info": {
+          "package_name": "com.example.dinamica1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlfLKaZrQ5uED2Zlb7a8pPFM-dysTsUv0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
