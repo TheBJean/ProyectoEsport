@@ -7,16 +7,6 @@ class AuthService {
   final CollectionReference _adminsRef =
       FirebaseFirestore.instance.collection('administradores');
 
-  // IDs específicos de administradores
-  final List<String> _adminIds = [
-    '4CjTW9K9zBmgZXMbuJMW',
-    'UlUR8w8DF2ozbAChmiDG',
-    'enoETNcJybhdVZhPoFEt',
-    'fpDT4yVWYYvyluMdINJ5',
-    'iv4GuD8FGjxJUMLPYxjQ',
-    'pQTTc40qA43zXksDlXFk',
-  ];
-
   // Inicializar usuarios por defecto
   Future<void> inicializarUsuarios() async {
     try {
@@ -113,10 +103,17 @@ class AuthService {
     }
   }
 
-  // Verificar si un usuario es administrador por ID
-  bool esAdmin(String? userId) {
+  // Verificar si un usuario es administrador consultando la base de datos
+  Future<bool> esAdmin(String? userId) async {
     if (userId == null) return false;
-    return _adminIds.contains(userId);
+    
+    try {
+      final adminDoc = await _adminsRef.doc(userId).get();
+      return adminDoc.exists;
+    } catch (e) {
+      print('Error verificando si es admin: $e');
+      return false;
+    }
   }
 
   // Obtener información de usuario por ID

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/videojuego.dart';
-import 'star_rating_widget.dart';
 
 class ResenaForm extends StatefulWidget {
   final Videojuego videojuego;
@@ -22,7 +21,6 @@ class _ResenaFormState extends State<ResenaForm> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _resenaController;
   late TextEditingController _autorController;
-  double _rating = 0.0; // Default rating
 
   @override
   void initState() {
@@ -44,7 +42,6 @@ class _ResenaFormState extends State<ResenaForm> {
         'texto': _resenaController.text,
         'autor': _autorController.text.isNotEmpty ? _autorController.text : 'Anónimo',
         'fecha': DateTime.now().toIso8601String(),
-        'rating': _rating, // Add user rating to the review
       };
 
       final videojuego = Videojuego(
@@ -55,6 +52,7 @@ class _ResenaFormState extends State<ResenaForm> {
         valoracion: widget.videojuego.valoracion,
         imagenUrl: widget.videojuego.imagenUrl,
         resenas: [...(widget.videojuego.resenas ?? []), nuevaResena],
+        ratings: widget.videojuego.ratings,
       );
       
       widget.onSave(videojuego);
@@ -78,7 +76,6 @@ class _ResenaFormState extends State<ResenaForm> {
           duration: const Duration(seconds: 2),
         ),
       );
-      
       Navigator.of(context).pop();
     }
   }
@@ -94,10 +91,10 @@ class _ResenaFormState extends State<ResenaForm> {
         children: [
           const Icon(Icons.comment, color: Color(0xFF66C0F4), size: 20),
           const SizedBox(width: 6),
-          Expanded(
+          const Expanded(
             child: Text(
               'Agregar Reseña',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Color(0xFF66C0F4),
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -160,7 +157,7 @@ class _ResenaFormState extends State<ResenaForm> {
                 maxLines: 3,
                 maxLength: 200,
                 helperText: 'Comparte tu opinión sobre este videojuego',
-                counterText: '${_resenaController.text.length}/200',
+                counterText: ' ${_resenaController.text.length}/200',
                 counterStyle: TextStyle(
                   color: _resenaController.text.length > 200 
                       ? const Color(0xFFE74C3C)
@@ -188,89 +185,6 @@ class _ResenaFormState extends State<ResenaForm> {
                 label: 'Tu nombre (opcional)',
                 icon: Icons.person,
                 helperText: 'Si no lo escribes, aparecerá como "Anónimo"',
-              ),
-              const SizedBox(height: 16),
-              // Sección de valoración
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1B2838).withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF66C0F4).withOpacity(0.3)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.star, color: Color(0xFFFFD700), size: 16),
-                        const SizedBox(width: 6),
-                        const Text(
-                          'Tu valoración',
-                          style: TextStyle(
-                            color: Color(0xFF66C0F4),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    // Star rating widget
-                    Center(
-                      child: StarRatingWidget(
-                        rating: _rating,
-                        size: 32,
-                        interactive: true,
-                        onRatingChanged: (rating) {
-                          setState(() {
-                            _rating = rating;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Slider for precise rating
-                    Column(
-                      children: [
-                        Text(
-                          'Valoración exacta: ${_rating.toStringAsFixed(1)} / 5.0',
-                          style: const TextStyle(
-                            color: Color(0xFFC7D5E0),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            activeTrackColor: const Color(0xFFFFD700),
-                            inactiveTrackColor: const Color(0xFF8F98A0).withOpacity(0.3),
-                            thumbColor: const Color(0xFFFFD700),
-                            overlayColor: const Color(0xFFFFD700).withOpacity(0.2),
-                            valueIndicatorColor: const Color(0xFF1B2838),
-                            valueIndicatorTextStyle: const TextStyle(
-                              color: Color(0xFFC7D5E0),
-                              fontSize: 12,
-                            ),
-                          ),
-                          child: Slider(
-                            value: _rating,
-                            min: 0.0,
-                            max: 5.0,
-                            divisions: 50, // 0.1 increments
-                            label: _rating.toStringAsFixed(1),
-                            onChanged: (value) {
-                              setState(() {
-                                _rating = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
               ),
             ],
           ),

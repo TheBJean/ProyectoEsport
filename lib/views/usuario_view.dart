@@ -270,7 +270,7 @@ class _UsuarioViewState extends State<UsuarioView> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Para valorar este juego, agrega una reseña usando el botón de comentarios.',
+                  'Para valorar este juego, agrega una reseña usando el botón de estrella.',
                   style: const TextStyle(
                     color: Color(0xFF66C0F4),
                     fontSize: 11,
@@ -395,6 +395,127 @@ class _UsuarioViewState extends State<UsuarioView> {
     );
   }
 
+  void _mostrarDialogoValoracion(Videojuego videojuego) {
+    final usuario = widget.usuario.usuario;
+    double? miValoracion;
+    if (videojuego.ratings != null) {
+      final miRating = videojuego.ratings!.firstWhere(
+        (r) => r['usuario'] == usuario,
+        orElse: () => {},
+      );
+      if (miRating.isNotEmpty && miRating['rating'] != null) {
+        miValoracion = (miRating['rating'] is int)
+            ? (miRating['rating'] as int).toDouble()
+            : (miRating['rating'] as double);
+      }
+    }
+    double valoracionTemp = miValoracion ?? 0.0;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1F2251),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.star, color: Color(0xFFFFD700), size: 20),
+              const SizedBox(width: 6),
+              const Text(
+                'Tu Valoración',
+                style: TextStyle(
+                  color: Color(0xFF66C0F4),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              StarRatingWidget(
+                rating: valoracionTemp,
+                size: 32,
+                interactive: true,
+                onRatingChanged: (rating) {
+                  valoracionTemp = rating;
+                  (context as Element).markNeedsBuild();
+                },
+              ),
+              const SizedBox(height: 8),
+              Slider(
+                value: valoracionTemp,
+                min: 0.0,
+                max: 5.0,
+                divisions: 50,
+                label: valoracionTemp.toStringAsFixed(1),
+                onChanged: (value) {
+                  valoracionTemp = value;
+                  (context as Element).markNeedsBuild();
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${valoracionTemp.toStringAsFixed(1)} / 5.0',
+                style: const TextStyle(
+                  color: Color(0xFFC7D5E0),
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF8F98A0),
+              ),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                // Actualizar o agregar la valoración del usuario
+                List<Map<String, dynamic>> nuevasRatings = List.from(videojuego.ratings ?? []);
+                final idx = nuevasRatings.indexWhere((r) => r['usuario'] == usuario);
+                if (idx >= 0) {
+                  nuevasRatings[idx]['rating'] = valoracionTemp;
+                } else {
+                  nuevasRatings.add({'usuario': usuario, 'rating': valoracionTemp});
+                }
+                final videojuegoActualizado = Videojuego(
+                  id: videojuego.id,
+                  nombre: videojuego.nombre,
+                  descripcion: videojuego.descripcion,
+                  valor: videojuego.valor,
+                  valoracion: videojuego.valoracion,
+                  imagenUrl: videojuego.imagenUrl,
+                  resenas: videojuego.resenas,
+                  ratings: nuevasRatings,
+                );
+                await _service.actualizarVideojuego(videojuegoActualizado);
+                _cargarVideojuegos();
+                Navigator.of(context).pop();
+                _mostrarMensaje('Valoración guardada');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF66C0F4),
+                foregroundColor: const Color(0xFF1B2838),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -515,6 +636,13 @@ class _UsuarioViewState extends State<UsuarioView> {
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.star, color: Color(0xFFFFD700), size: 18),
+                                          onPressed: () => _mostrarDialogoValoracion(videojuego),
+                                          tooltip: 'Valorar',
+                                          padding: const EdgeInsets.all(4),
+                                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                        ),
                                         IconButton(
                                           icon: const Icon(Icons.add_comment, color: Color(0xFF9B59B6), size: 18),
                                           onPressed: () => _mostrarFormularioResena(videojuego),

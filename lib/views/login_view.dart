@@ -18,6 +18,7 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isRegistro = false;
+  bool _mostrarPassword = false;
 
   @override
   void initState() {
@@ -232,6 +233,12 @@ class _LoginViewState extends State<LoginView> {
                             label: 'Contraseña',
                             icon: Icons.lock,
                             isPassword: true,
+                            mostrarPassword: _mostrarPassword,
+                            onTogglePassword: () {
+                              setState(() {
+                                _mostrarPassword = !_mostrarPassword;
+                              });
+                            },
                             validator: (v) => v == null || v.isEmpty ? 'Ingrese contraseña' : null,
                           ),
                           const SizedBox(height: 24),
@@ -344,6 +351,8 @@ class _LoginViewState extends State<LoginView> {
     required String label,
     required IconData icon,
     bool isPassword = false,
+    bool mostrarPassword = false,
+    VoidCallback? onTogglePassword,
     String? Function(String?)? validator,
   }) {
     return Container(
@@ -354,11 +363,20 @@ class _LoginViewState extends State<LoginView> {
       ),
       child: TextFormField(
         controller: controller,
-        obscureText: isPassword,
+        obscureText: isPassword && !mostrarPassword,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Color(0xFF8F98A0)),
           prefixIcon: Icon(icon, color: const Color(0xFF66C0F4)),
+          suffixIcon: isPassword && onTogglePassword != null
+              ? IconButton(
+                  icon: Icon(
+                    mostrarPassword ? Icons.visibility : Icons.visibility_off,
+                    color: const Color(0xFF66C0F4),
+                  ),
+                  onPressed: onTogglePassword,
+                )
+              : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(12),
         ),

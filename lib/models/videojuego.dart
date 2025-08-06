@@ -7,6 +7,7 @@ class Videojuego {
   double valoracion;
   String? imagenUrl; // <-- Nuevo campo
   List<Map<String, dynamic>>? resenas; // Lista de reseñas
+  List<Map<String, dynamic>>? ratings; // Lista de valoraciones por usuario
 
   Videojuego({
     this.id,
@@ -16,6 +17,7 @@ class Videojuego {
     required this.valoracion,
     this.imagenUrl,
     this.resenas,
+    this.ratings,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class Videojuego {
       'valoracion': valoracion,
       'imagenUrl': imagenUrl,
       'resenas': resenas,
+      'ratings': ratings,
     };
   }
 
@@ -38,6 +41,7 @@ class Videojuego {
       valoracion: (map['valoracion'] ?? 0).toDouble(),
       imagenUrl: map['imagenUrl'],
       resenas: (map['resenas'] as List?)?.map((e) => Map<String, dynamic>.from(e)).toList(),
+      ratings: (map['ratings'] as List?)?.map((e) => Map<String, dynamic>.from(e)).toList(),
     );
   }
 }

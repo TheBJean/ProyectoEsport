@@ -78,19 +78,6 @@ class _VideojuegoFormMobileState extends State<VideojuegoFormMobile> {
       context: context,
       builder: (context) {
         double tempValor = valorActual;
-// ... existing imports ...
-import 'package:flutter/material.dart';
-
-class VideojuegoFormMobile extends StatefulWidget {
-  final Videojuego? videojuego;
-  final Function(Videojuego) onSave;
-  final bool esAdmin;
-
-  const VideojuegoFormMobile({
-    Key? key,
-    this.videojuego,
-    required this.onSave,
-    this.esAdmin = false,
         return AlertDialog(
           backgroundColor: const Color(0xFF1F2251),
           shape: RoundedRectangleBorder(

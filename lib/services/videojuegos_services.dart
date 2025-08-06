@@ -55,20 +55,20 @@ class VideojuegoService {
     }
   }
 
-  // Calculate average rating from user reviews
+  // Calculate average rating from user ratings (one per user)
   Videojuego _calcularValoracionPromedio(Videojuego videojuego) {
-    if (videojuego.resenas == null || videojuego.resenas!.isEmpty) {
-      return videojuego; // Return original if no reviews
+    if (videojuego.ratings == null || videojuego.ratings!.isEmpty) {
+      return videojuego; // Return original if no ratings
     }
 
     double sumaRatings = 0.0;
     int contadorRatings = 0;
 
-    for (final resena in videojuego.resenas!) {
-      if (resena.containsKey('rating') && resena['rating'] != null) {
-        final rating = (resena['rating'] is int) 
-            ? (resena['rating'] as int).toDouble() 
-            : (resena['rating'] as double);
+    for (final ratingEntry in videojuego.ratings!) {
+      if (ratingEntry.containsKey('rating') && ratingEntry['rating'] != null) {
+        final rating = (ratingEntry['rating'] is int)
+            ? (ratingEntry['rating'] as int).toDouble()
+            : (ratingEntry['rating'] as double);
         sumaRatings += rating;
         contadorRatings++;
       }
@@ -84,6 +84,7 @@ class VideojuegoService {
         valoracion: double.parse(promedio.toStringAsFixed(1)), // Round to 1 decimal
         imagenUrl: videojuego.imagenUrl,
         resenas: videojuego.resenas,
+        ratings: videojuego.ratings,
       );
     }
 
