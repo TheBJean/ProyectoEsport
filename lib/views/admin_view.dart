@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import '../models/videojuego.dart';
 import '../models/usuario.dart';
 import '../services/videojuegos_services.dart';
-import '../widgets/resenas_view.dart';
+import 'resenas_view.dart';
 import '../widgets/videojuego_form_mobile.dart';
 import '../widgets/confirm_dialog.dart';
-import '../widgets/star_rating_widget.dart';
+import '../widgets/steam_app_bar.dart';
+import '../widgets/steam_snackbar.dart';
+import '../widgets/videojuego_card.dart';
+import '../widgets/action_button.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/app_colors.dart';
+import '../widgets/app_styles.dart';
 import 'login_view.dart';
 
 class AdminView extends StatefulWidget {
+// Esto permite que la interfaz se actualice cuando los datos o variables internas cambian.
   final Usuario usuario;
 
   const AdminView({
@@ -120,328 +127,57 @@ class _AdminViewState extends State<AdminView> {
   }
 
   void _mostrarMensaje(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 16),
-            const SizedBox(width: 6),
-            Expanded(child: Text(mensaje)),
-          ],
-        ),
-        backgroundColor: const Color(0xFF5C7E10),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SteamSnackBar.showSuccess(context, mensaje);
   }
 
   void _mostrarError(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error, color: Colors.white, size: 16),
-            const SizedBox(width: 6),
-            Expanded(child: Text(mensaje)),
-          ],
-        ),
-        backgroundColor: const Color(0xFFE74C3C),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SteamSnackBar.showError(context, mensaje);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1B2838),
-      appBar: AppBar(
-        title: const Text(
-          'Admin - Catálogo E-Sports',
-          style: TextStyle(
-            color: Color(0xFF66C0F4),
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            letterSpacing: 0.8,
-          ),
-        ),
-        backgroundColor: const Color(0xFF171A21),
-        centerTitle: true,
-        elevation: 4,
-        shadowColor: const Color(0xFF66C0F4).withOpacity(0.3),
-        toolbarHeight: 48,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Color(0xFF66C0F4)),
-            onPressed: _cerrarSesion,
-            tooltip: 'Cerrar sesión',
-          ),
-        ],
+      backgroundColor: AppColors.secondary,
+      appBar: SteamAppBar(
+        title: 'Admin - Catálogo E-Sports',
+        onLogout: _cerrarSesion,
       ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Color(0xFF66C0F4),
+                color: AppColors.primary,
               ),
             )
           : _videojuegos.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.games,
-                        size: 64,
-                        color: const Color(0xFF66C0F4).withOpacity(0.5),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'No hay videojuegos',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFFC7D5E0),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Agrega tu primer videojuego',
-                        style: TextStyle(
-                          color: Color(0xFF8F98A0),
-                        ),
-                      ),
-                    ],
-                  ),
+              ? const EmptyState(
+                  title: 'No hay videojuegos',
+                  subtitle: 'Agrega tu primer videojuego',
                 )
               : RefreshIndicator(
                   onRefresh: _cargarVideojuegos,
-                  color: const Color(0xFF66C0F4),
+                  color: AppColors.primary,
                   child: Container(
                     decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF1B2838), Color(0xFF2A475E)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
+                      gradient: AppStyles.backgroundGradient,
                     ),
                     child: ListView.builder(
                       padding: const EdgeInsets.all(4.0),
                       itemCount: _videojuegos.length,
                       itemBuilder: (context, index) {
                         final videojuego = _videojuegos[index];
-                        return Container(
-                          margin: const EdgeInsets.all(4.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF2A475E), Color(0xFF1B2838)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                        return VideojuegoCard(
+                          videojuego: videojuego,
+                          actionButtons: [
+                            ActionButtons.edit(
+                              onPressed: () => _mostrarFormularioVideojuego(videojuego: videojuego),
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF66C0F4).withOpacity(0.15),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        videojuego.nombre,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFFC7D5E0),
-                                          letterSpacing: 0.5,
-                                          shadows: [Shadow(color: Color(0xFF66C0F4), blurRadius: 2)],
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit, color: Color(0xFFF39C12), size: 18),
-                                          onPressed: () => _mostrarFormularioVideojuego(videojuego: videojuego),
-                                          tooltip: 'Editar videojuego',
-                                          padding: const EdgeInsets.all(4),
-                                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete, color: Color(0xFFE74C3C), size: 18),
-                                          onPressed: () => _eliminarVideojuego(videojuego),
-                                          tooltip: 'Eliminar videojuego',
-                                          padding: const EdgeInsets.all(4),
-                                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.visibility, color: Color(0xFF66C0F4), size: 18),
-                                          onPressed: () => _verResenas(videojuego),
-                                          tooltip: 'Ver reseñas',
-                                          padding: const EdgeInsets.all(4),
-                                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                if (videojuego.imagenUrl != null && videojuego.imagenUrl!.isNotEmpty)
-                                  Container(
-                                    height: 100, // Un poco más grande en vertical
-                                    width: double.infinity,
-                                    margin: const EdgeInsets.only(bottom: 8),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: const Color(0xFF66C0F4).withOpacity(0.3)),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(6),
-                                      child: videojuego.imagenUrl!.startsWith('http')
-                                          ? Image.network(
-                                              videojuego.imagenUrl!,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return Container(
-                                                  color: const Color(0xFF1B2838),
-                                                  child: const Icon(
-                                                    Icons.broken_image,
-                                                    color: Color(0xFF8F98A0),
-                                                    size: 24,
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                          : Image.asset(
-                                              videojuego.imagenUrl!,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return Container(
-                                                  color: const Color(0xFF1B2838),
-                                                  child: const Icon(
-                                                    Icons.broken_image,
-                                                    color: Color(0xFF8F98A0),
-                                                    size: 24,
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                    ),
-                                  ),
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1B2838).withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: const Color(0xFF66C0F4).withOpacity(0.3)),
-                                  ),
-                                  child: Text(
-                                    videojuego.descripcion,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF8F98A0),
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          colors: [Color(0xFF5C7E10), Color(0xFF4A6B0A)],
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: const Color(0xFF5C7E10).withOpacity(0.3),
-                                            blurRadius: 2,
-                                            offset: const Offset(0, 1),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Text(
-                                        '\$${videojuego.valor.toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        StarRatingWidget(
-                                          rating: videojuego.valoracion,
-                                          size: 16,
-                                          interactive: false,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          videojuego.valoracion.toStringAsFixed(1),
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFFC7D5E0),
-                                          ),
-                                        ),
-                                        if (videojuego.resenas != null && videojuego.resenas!.isNotEmpty) ...[
-                                          const SizedBox(width: 8),
-                                          GestureDetector(
-                                            onTap: () => _verResenas(videojuego),
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFF66C0F4).withOpacity(0.2),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(Icons.comment, color: Color(0xFF66C0F4), size: 10),
-                                                  const SizedBox(width: 2),
-                                                  Text(
-                                                    '${videojuego.resenas!.length}',
-                                                    style: const TextStyle(
-                                                      fontSize: 10,
-                                                      color: Color(0xFF66C0F4),
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            ActionButtons.delete(
+                              onPressed: () => _eliminarVideojuego(videojuego),
                             ),
-                          ),
+                            ActionButtons.view(
+                              onPressed: () => _verResenas(videojuego),
+                            ),
+                          ],
                         );
                       },
                     ),
@@ -451,8 +187,8 @@ class _AdminViewState extends State<AdminView> {
         margin: const EdgeInsets.only(bottom: 16.0, right: 16.0),
         child: FloatingActionButton(
           onPressed: () => _mostrarFormularioVideojuego(),
-          backgroundColor: const Color(0xFF66C0F4),
-          foregroundColor: const Color(0xFF1B2838),
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.secondary,
           elevation: 8,
           mini: true,
           child: const Icon(Icons.add, size: 20),

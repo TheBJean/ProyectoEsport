@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 
 class StarRatingWidget extends StatelessWidget {
   final double rating;
@@ -14,8 +15,8 @@ class StarRatingWidget extends StatelessWidget {
     this.size = 16.0,
     this.interactive = false,
     this.onRatingChanged,
-    this.starColor = const Color(0xFFFFD700),
-    this.emptyStarColor = const Color(0xFF8F98A0),
+    this.starColor = AppColors.star,
+    this.emptyStarColor = AppColors.textSecondary,
   }) : super(key: key);
 
   @override

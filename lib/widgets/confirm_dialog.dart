@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
+import 'app_styles.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -19,18 +21,18 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF1F2251),
+      backgroundColor: AppColors.dialogBackground,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       title: Row(
         children: [
-          const Icon(Icons.warning, color: Color(0xFFE74C3C), size: 24),
+          const Icon(Icons.warning, color: AppColors.error, size: 24),
           const SizedBox(width: 8),
           Text(
             title,
             style: const TextStyle(
-              color: Color(0xFF66C0F4),
+              color: AppColors.primary,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -40,16 +42,14 @@ class ConfirmDialog extends StatelessWidget {
       content: Text(
         message,
         style: const TextStyle(
-          color: Color(0xFFC7D5E0),
+          color: AppColors.textPrimary,
           fontSize: 16,
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF8F98A0),
-          ),
+          style: AppStyles.textButtonStyle,
           child: Text(cancelText),
         ),
         ElevatedButton(
@@ -57,14 +57,7 @@ class ConfirmDialog extends StatelessWidget {
             onConfirm();
             Navigator.of(context).pop();
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFE74C3C),
-            foregroundColor: Colors.white,
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+          style: AppStyles.errorButtonStyle,
           child: Text(confirmText),
         ),
       ],

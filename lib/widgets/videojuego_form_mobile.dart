@@ -671,23 +671,13 @@ class _VideojuegoFormMobileState extends State<VideojuegoFormMobile> {
   Widget _buildImageSelector() {
     // Lista de imágenes disponibles en assets/images/
     final List<String> imagenesDisponibles = [
-    'lib/assets/images/csgo.jpg'
-    'lib/assets/images/lol.jpg',
-    'lib/assets/images/dota2.jpg',
-    'lib/assets/images/valorant.jpg',
-    'lib/assets/images/overwatch.jpg',
-    'lib/assets/images/fortnite.jpg',
-    'lib/assets/images/pubg.jpg',
-    'lib/assets/images/apex.jpg',
-    'lib/assets/images/rocket_league.jpg',
-    'lib/assets/images/fifa.jpg',
+    'lib/assets/images/csgo.jpg',
     'lib/assets/images/minecraft.jpg',
+    'lib/assets/images/fifa.jpg',
     'lib/assets/images/among_us.jpg',
-    'lib/assets/images/fall_guys.jpg',
-    'lib/assets/images/roblox.jpg',
     'lib/assets/images/gta.jpg',
-    'lib/assets/images/cod.jpg',
-    'lib/assets/images/rainbow_six.jpg',
+    'lib/assets/images/Both.jpg',
+    'lib/assets/images/eldenring.jpg',
   ];
 
     return SizedBox(

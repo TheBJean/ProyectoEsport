@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/videojuego.dart';
+import 'app_colors.dart';
+import 'app_styles.dart';
+import 'steam_text_field.dart';
+import 'steam_snackbar.dart';
 
 class ResenaForm extends StatefulWidget {
   final Videojuego videojuego;
@@ -58,24 +62,7 @@ class _ResenaFormState extends State<ResenaForm> {
       widget.onSave(videojuego);
       _resenaController.clear();
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.white, size: 16),
-              SizedBox(width: 6),
-              Text('Reseña agregada exitosamente'),
-            ],
-          ),
-          backgroundColor: const Color(0xFF5C7E10),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          margin: const EdgeInsets.all(8),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      SteamSnackBar.showSuccess(context, 'Reseña agregada exitosamente');
       Navigator.of(context).pop();
     }
   }
@@ -83,19 +70,19 @@ class _ResenaFormState extends State<ResenaForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF1F2251),
+      backgroundColor: AppColors.dialogBackground,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       title: Row(
         children: [
-          const Icon(Icons.comment, color: Color(0xFF66C0F4), size: 20),
+          const Icon(Icons.comment, color: AppColors.primary, size: 20),
           const SizedBox(width: 6),
           const Expanded(
             child: Text(
               'Agregar Reseña',
               style: TextStyle(
-                color: Color(0xFF66C0F4),
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -114,22 +101,22 @@ class _ResenaFormState extends State<ResenaForm> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1B2838).withOpacity(0.5),
+                  color: AppColors.secondaryWithOpacity(0.5),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF66C0F4).withOpacity(0.3)),
+                  border: Border.all(color: AppColors.primaryWithOpacity(0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.games, color: Color(0xFF66C0F4), size: 16),
+                        const Icon(Icons.games, color: AppColors.primary, size: 16),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             widget.videojuego.nombre,
                             style: const TextStyle(
-                              color: Color(0xFFC7D5E0),
+                              color: AppColors.textPrimary,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -141,7 +128,7 @@ class _ResenaFormState extends State<ResenaForm> {
                     Text(
                       widget.videojuego.descripcion,
                       style: const TextStyle(
-                        color: Color(0xFF8F98A0),
+                        color: AppColors.textSecondary,
                         fontSize: 12,
                       ),
                     ),
@@ -150,7 +137,7 @@ class _ResenaFormState extends State<ResenaForm> {
               ),
               const SizedBox(height: 16),
               // Campo de reseña
-              _buildSteamTextField(
+              SteamTextField(
                 controller: _resenaController,
                 label: 'Tu reseña',
                 icon: Icons.edit,
@@ -160,8 +147,8 @@ class _ResenaFormState extends State<ResenaForm> {
                 counterText: ' ${_resenaController.text.length}/200',
                 counterStyle: TextStyle(
                   color: _resenaController.text.length > 200 
-                      ? const Color(0xFFE74C3C)
-                      : const Color(0xFF8F98A0),
+                      ? AppColors.error
+                      : AppColors.textSecondary,
                   fontWeight: _resenaController.text.length > 200 
                       ? FontWeight.bold 
                       : FontWeight.normal,
@@ -180,7 +167,7 @@ class _ResenaFormState extends State<ResenaForm> {
               ),
               const SizedBox(height: 12),
               // Campo de autor
-              _buildSteamTextField(
+              SteamTextField(
                 controller: _autorController,
                 label: 'Tu nombre (opcional)',
                 icon: Icons.person,
@@ -193,73 +180,17 @@ class _ResenaFormState extends State<ResenaForm> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF8F98A0),
-          ),
+          style: AppStyles.textButtonStyle,
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
           onPressed: _agregarResena,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF9B59B6),
-            foregroundColor: Colors.white,
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+          style: AppStyles.purpleButtonStyle,
           child: const Text('Agregar Reseña'),
         ),
       ],
     );
   }
 
-  Widget _buildSteamTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    int? maxLines,
-    int? maxLength,
-    String? helperText,
-    String? counterText,
-    TextStyle? counterStyle,
-    String? errorText,
-    TextInputType? keyboardType,
-    bool readOnly = false,
-    VoidCallback? onTap,
-    String? Function(String?)? validator,
-    void Function(String)? onChanged,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: const Color(0xFF66C0F4).withOpacity(0.3)),
-        color: const Color(0xFF1B2838).withOpacity(0.5),
-      ),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Color(0xFF8F98A0), fontSize: 12),
-          prefixIcon: Icon(icon, color: const Color(0xFF66C0F4), size: 18),
-          helperText: helperText,
-          helperStyle: const TextStyle(color: Color(0xFF8F98A0), fontSize: 10),
-          counterText: counterText,
-          counterStyle: counterStyle,
-          errorText: errorText,
-          errorStyle: const TextStyle(color: Color(0xFFE74C3C), fontSize: 10),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(8),
-        ),
-        style: const TextStyle(color: Color(0xFFC7D5E0), fontSize: 12),
-        maxLines: maxLines,
-        maxLength: maxLength,
-        keyboardType: keyboardType,
-        readOnly: readOnly,
-        onTap: onTap,
-        validator: validator,
-        onChanged: onChanged,
-      ),
-    );
-  }
+
 } 

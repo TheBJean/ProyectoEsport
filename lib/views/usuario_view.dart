@@ -3,13 +3,15 @@ import '../models/videojuego.dart';
 import '../models/usuario.dart';
 import '../services/videojuegos_services.dart';
 import '../widgets/resena_form.dart';
-import '../widgets/resenas_view.dart';
+import 'resenas_view.dart';
 import '../widgets/confirm_dialog.dart';
 import '../widgets/star_rating_widget.dart';
+import '../widgets/steam_snackbar.dart';
 import 'login_view.dart';
 
 class UsuarioView extends StatefulWidget {
   final Usuario usuario;
+// Esto permite que la interfaz se actualice cuando los datos o variables internas cambian.
 
   const UsuarioView({
     Key? key,
@@ -116,138 +118,6 @@ class _UsuarioViewState extends State<UsuarioView> {
                 ),
                 const SizedBox(height: 16),
                 StarRatingWidget(
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                   rating: videojuego.valoracion,
                 ),
                 const SizedBox(height: 8),
@@ -356,43 +226,11 @@ class _UsuarioViewState extends State<UsuarioView> {
   }
 
   void _mostrarMensaje(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 16),
-            const SizedBox(width: 6),
-            Expanded(child: Text(mensaje)),
-          ],
-        ),
-        backgroundColor: const Color(0xFF5C7E10),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SteamSnackBar.showSuccess(context, mensaje);
   }
 
   void _mostrarError(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error, color: Colors.white, size: 16),
-            const SizedBox(width: 6),
-            Expanded(child: Text(mensaje)),
-          ],
-        ),
-        backgroundColor: const Color(0xFFE74C3C),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SteamSnackBar.showError(context, mensaje);
   }
 
   void _mostrarDialogoValoracion(Videojuego videojuego) {
@@ -497,8 +335,10 @@ class _UsuarioViewState extends State<UsuarioView> {
                 );
                 await _service.actualizarVideojuego(videojuegoActualizado);
                 _cargarVideojuegos();
-                Navigator.of(context).pop();
-                _mostrarMensaje('Valoración guardada');
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                  _mostrarMensaje('Valoración guardada');
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF66C0F4),

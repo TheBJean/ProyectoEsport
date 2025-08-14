@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../models/usuario.dart';
+import '../widgets/steam_text_field.dart';
+import '../widgets/steam_snackbar.dart';
+import '../widgets/app_colors.dart';
+import '../widgets/app_styles.dart';
 import 'admin_view.dart';
 import 'usuario_view.dart';
 
 class LoginView extends StatefulWidget {
+// Esto permite que la interfaz se actualice cuando los datos o variables internas cambian.
   const LoginView({Key? key}) : super(key: key);
 
   @override
@@ -111,56 +116,20 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _mostrarMensaje(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 16),
-            const SizedBox(width: 6),
-            Expanded(child: Text(mensaje)),
-          ],
-        ),
-        backgroundColor: const Color(0xFF5C7E10),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SteamSnackBar.showSuccess(context, mensaje);
   }
 
   void _mostrarError(String mensaje) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error, color: Colors.white, size: 16),
-            const SizedBox(width: 6),
-            Expanded(child: Text(mensaje)),
-          ],
-        ),
-        backgroundColor: const Color(0xFFE74C3C),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SteamSnackBar.showError(context, mensaje);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1B2838),
+      backgroundColor: AppColors.secondary,
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1B2838), Color(0xFF2A475E)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: AppStyles.backgroundGradient,
         ),
         child: SafeArea(
           child: Center(
@@ -173,16 +142,16 @@ class _LoginViewState extends State<LoginView> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF66C0F4).withOpacity(0.1),
+                      color: AppColors.primaryWithOpacity(0.1),
                       borderRadius: BorderRadius.circular(50),
                       border: Border.all(
-                        color: const Color(0xFF66C0F4).withOpacity(0.3),
+                        color: AppColors.primaryWithOpacity(0.3),
                       ),
                     ),
                     child: const Icon(
                       Icons.games,
                       size: 60,
-                      color: Color(0xFF66C0F4),
+                      color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -191,7 +160,7 @@ class _LoginViewState extends State<LoginView> {
                   Text(
                     'Catálogo E-Sports',
                     style: const TextStyle(
-                      color: Color(0xFF66C0F4),
+                      color: AppColors.primary,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
@@ -201,7 +170,7 @@ class _LoginViewState extends State<LoginView> {
                   Text(
                     _isRegistro ? 'Crear cuenta' : 'Iniciar sesión',
                     style: const TextStyle(
-                      color: Color(0xFF8F98A0),
+                      color: AppColors.textSecondary,
                       fontSize: 16,
                     ),
                   ),
@@ -211,24 +180,24 @@ class _LoginViewState extends State<LoginView> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1F2251),
+                      color: AppColors.dialogBackground,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF66C0F4).withOpacity(0.3),
+                        color: AppColors.primaryWithOpacity(0.3),
                       ),
                     ),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         children: [
-                          _buildSteamTextField(
+                          SteamTextField(
                             controller: _usuarioController,
                             label: 'Usuario',
                             icon: Icons.person,
                             validator: (v) => v == null || v.isEmpty ? 'Ingrese usuario' : null,
                           ),
                           const SizedBox(height: 16),
-                          _buildSteamTextField(
+                          SteamTextField(
                             controller: _passwordController,
                             label: 'Contraseña',
                             icon: Icons.lock,
@@ -248,13 +217,9 @@ class _LoginViewState extends State<LoginView> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _isLoading ? null : (_isRegistro ? _registrar : _autenticar),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF66C0F4),
-                                foregroundColor: const Color(0xFF1B2838),
-                                elevation: 4,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                              style: AppStyles.primaryButtonStyle.copyWith(
+                                padding: MaterialStateProperty.all(
+                                  const EdgeInsets.symmetric(vertical: 12),
                                 ),
                               ),
                               child: _isLoading
@@ -263,7 +228,7 @@ class _LoginViewState extends State<LoginView> {
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Color(0xFF1B2838),
+                                        color: AppColors.secondary,
                                       ),
                                     )
                                   : Text(
@@ -284,9 +249,7 @@ class _LoginViewState extends State<LoginView> {
                                 _isRegistro = !_isRegistro;
                               });
                             },
-                            style: TextButton.styleFrom(
-                              foregroundColor: const Color(0xFF8F98A0),
-                            ),
+                            style: AppStyles.textButtonStyle,
                             child: Text(
                               _isRegistro
                                   ? '¿Ya tienes cuenta? Inicia sesión'
@@ -295,46 +258,6 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Información de usuarios por defecto
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1B2838).withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color(0xFF66C0F4).withOpacity(0.2),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Usuarios por defecto:',
-                          style: TextStyle(
-                            color: Color(0xFF66C0F4),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Admin: usuario=admin, password=password123',
-                          style: TextStyle(
-                            color: Color(0xFF8F98A0),
-                            fontSize: 12,
-                          ),
-                        ),
-                        const Text(
-                          'Usuario: usuario=usuario, password=password123',
-                          style: TextStyle(
-                            color: Color(0xFF8F98A0),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ],
@@ -346,43 +269,5 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildSteamTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    bool isPassword = false,
-    bool mostrarPassword = false,
-    VoidCallback? onTogglePassword,
-    String? Function(String?)? validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF66C0F4).withOpacity(0.3)),
-        color: const Color(0xFF1B2838).withOpacity(0.5),
-      ),
-      child: TextFormField(
-        controller: controller,
-        obscureText: isPassword && !mostrarPassword,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Color(0xFF8F98A0)),
-          prefixIcon: Icon(icon, color: const Color(0xFF66C0F4)),
-          suffixIcon: isPassword && onTogglePassword != null
-              ? IconButton(
-                  icon: Icon(
-                    mostrarPassword ? Icons.visibility : Icons.visibility_off,
-                    color: const Color(0xFF66C0F4),
-                  ),
-                  onPressed: onTogglePassword,
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(12),
-        ),
-        style: const TextStyle(color: Color(0xFFC7D5E0)),
-        validator: validator,
-      ),
-    );
-  }
-} 
+
+}
