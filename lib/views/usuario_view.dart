@@ -11,7 +11,7 @@ import 'login_view.dart';
 
 class UsuarioView extends StatefulWidget {
   final Usuario usuario;
-// Esto permite que la interfaz se actualice cuando los datos o variables internas cambian.
+// crear widgets que sí pueden cambiar su estado durante la ejecución.
 
   const UsuarioView({
     Key? key,

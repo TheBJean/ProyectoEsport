@@ -15,7 +15,7 @@ import '../widgets/app_styles.dart';
 import 'login_view.dart';
 
 class AdminView extends StatefulWidget {
-// Esto permite que la interfaz se actualice cuando los datos o variables internas cambian.
+// crear widgets que sí pueden cambiar su estado durante la ejecución.
   final Usuario usuario;
 
   const AdminView({

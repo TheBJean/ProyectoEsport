@@ -13,12 +13,7 @@ class AuthService {
       // Verificar si ya existen usuarios
       final snapshot = await _usuariosRef.get();
       if (snapshot.docs.isEmpty) {
-        // Crear usuario normal
-        await _usuariosRef.add({
-          'usuario': 'usuario',
-          'password': 'password123',
-          'rol': 'usuario',
-        });
+      
       }
 
       // Verificar si ya existen administradores

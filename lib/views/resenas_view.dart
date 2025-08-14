@@ -6,6 +6,7 @@ import '../widgets/app_styles.dart';
 import '../widgets/empty_state.dart';
 
 class ResenasView extends StatelessWidget { 
+  //crear widgets que no cambian su estado a lo largo del tiempo.
   final Videojuego videojuego;
   final bool esAdmin;
   final Function(int)? onEliminarResena;
